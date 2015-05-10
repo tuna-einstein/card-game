@@ -1,0 +1,60 @@
+@CHARSET "UTF-8";
+
+body {
+	text-align: center;
+	font-family: verdana, sans-serif;
+}
+
+h1 {
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	margin: 40px 0px 70px;
+	text-align: center;
+}
+
+.gwt-CheckBox {
+	margin: 10px;
+}
+
+.myLabelCss {
+	text-align: center;
+	width: 4em;
+	font-weight: bold;
+	font-size: medium;
+	background-color: teal;
+	color: white;
+	text-align: left;
+	
+}
+
+.gwt-TabLayoutPanelTabs {
+	width: auto !important;
+	float: left;
+}
+
+.gwt-TabLayoutPanelTab {
+	margin-left: 6px;
+	padding: 3px 6px 3px 6px;
+	cursor: pointer;
+	cursor: hand;
+	color: black;
+	font-weight: bold;
+	text-align: center;
+	background: None !important;
+	float: left;
+}
+
+.gwt-TabLayoutPanelTab-selected {
+	cursor: default;
+	background: None !important;
+}
+
+.suggestPopupContent {
+  background: white;
+  text-align: left;
+}
+
+.gwt-TextBox-readonly {
+  color: yellow!important;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	.important {
+		font-weight: bold;
+	}
+	
+	.imageFocus {
+		cursor: pointer;
+		margin-left: 1em;
+	}
+	.suggestBox {
+	text-align: left;
+
+	}
+	</ui:style>
+
+	<g:VerticalPanel width="100%" horizontalAlignment="ALIGN_CENTER ">
+
+		<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE"
+			height="3em">
+			<g:SuggestBox ui:field="suggestBox" width="20em" focus="true" addStyleNames="{style.suggestBox}"/>
+			<g:Image url="search.png" ui:field="search" width="4em"
+				styleName="{style.imageFocus}"></g:Image>
+		</g:HorizontalPanel>
+		<g:ScrollPanel>
+			<g:VerticalPanel ui:field="resultContainer" height="100%" />
+		</g:ScrollPanel>
+	</g:VerticalPanel>
+</ui:UiBinder> 

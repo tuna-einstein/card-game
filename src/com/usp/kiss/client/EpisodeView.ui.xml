@@ -1,0 +1,81 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:myc='urn:import:com.usp.kiss.client.custom' xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	.important {
+		font-weight: bold;
+	}
+	
+	.label {
+		text-align: center;
+		width: 4em;
+		font-size: medium;
+	}
+	
+	.errorLabel {
+		text-align: center;
+		font-size: medium;
+		color: red;
+		font-weight: bold;
+		margin: 1em;
+	}
+	
+	.placeHolderCss {
+		margin-left: -6px;
+		visibility: hidden;
+		width: 4em;
+	}
+	
+	.vPanel {
+		width: 100%;
+		
+	}
+	
+	.hPanel {
+		width: 100%;
+		margin-top: 10px;
+	}
+	
+	.imagePanel {
+		margin-left: 35%;
+		margin-top: 10px;
+	}
+	
+	.image {
+		margin: 1%;
+		width: 20%;
+		cursor: pointer;
+	}
+	
+	.mainContainer {
+		
+	}
+	</ui:style>
+	<g:DisclosurePanel width="100%" addStyleNames="{style.mainContainer}"
+		ui:field="mainContainer" animationEnabled="true">
+		<g:customHeader>
+			<g:VerticalPanel styleName="{style.vPanel}" horizontalAlignment="ALIGN_CENTER">
+			<g:HTMLPanel>
+			<hr/>
+			</g:HTMLPanel>
+				<g:HorizontalPanel width="100%" ui:field="scoreContainer">
+					<myc:EditableLabel ui:field="title" />
+				</g:HorizontalPanel>
+				<g:Label ui:field="errorLabel" styleName="{style.errorLabel}" />
+				
+			</g:VerticalPanel>
+		</g:customHeader>
+		<g:VerticalPanel width="100%">
+			<g:HorizontalPanel styleName="{style.hPanel}"
+				ui:field="expectedValueContainer">
+				<myc:EditableLabel addStyleNames="{style.placeHolderCss}" />
+			</g:HorizontalPanel>
+
+			<g:HorizontalPanel styleName="{style.hPanel}"
+				ui:field="actualValueContainer">
+				<myc:EditableLabel addStyleNames="{style.placeHolderCss}" />
+			</g:HorizontalPanel>
+		</g:VerticalPanel>
+	</g:DisclosurePanel>
+
+</ui:UiBinder> 
