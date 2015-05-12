@@ -1,11 +1,14 @@
 package com.usp.kiss.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -72,6 +75,20 @@ public class EpisodeView extends Composite {
         addTextHandlers(size);
 
         setData(episode);
+        
+        mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+            
+            public void onOpen(OpenEvent<DisclosurePanel> event) {
+                Timer timer = new Timer() {
+                    @Override
+                    public void run() {
+                        updateData();
+                        mainContainer.setOpen(false);
+                    }
+                };
+                timer.schedule(30000);
+            }
+        });
     }
 
     private void addTextHandlers(int size) {

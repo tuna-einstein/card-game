@@ -157,7 +157,7 @@ public class GameTableView extends Composite  {
                         aggScores[i].getElement().getStyle().setBackgroundColor("rgb(108, 11, 140)");
                     }
                     if(sorted.length > 1 && scores[i] == sorted[0]) {
-                        aggScores[i].getElement().getStyle().setBackgroundColor("red");
+                        aggScores[i].getElement().getStyle().setBackgroundColor("rgb(56, 184, 58)");
                     }
                 }
             }

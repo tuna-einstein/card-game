@@ -49,8 +49,9 @@ public class EditableLabel extends TextBox {
             super.setText("");
         }
 
+        getElement().getStyle().setBackgroundColor("rgb(13, 62, 219)");
         if (getText().startsWith("-")) {
-            getElement().getStyle().setBackgroundColor("rgb(13, 62, 219)");
+            getElement().getStyle().setBackgroundColor("red");
         } else if(getText().equals("0")) {
             getElement().getStyle().setBackgroundColor("teal");
         }
