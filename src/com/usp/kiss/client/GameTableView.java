@@ -60,11 +60,21 @@ public class GameTableView extends Composite  {
     private EditableLabel[] playerNames;
     private EditableLabel[] aggScores;
     private boolean isReadOnly;
+    private int openEpisodeEventId = 0;
 
     public GameTableView(Game gam, boolean isReadOnly) {
         this.game = gam;
         this.isReadOnly = isReadOnly;
         initWidget(uiBinder.createAndBindUi(this));
+        if (!isReadOnly) {
+            AppUtils.EVENT_BUS.addHandler(NextEpisodeEvent.TYPE, new NextEpisodeEventHandler() {
+                
+                public void onNextEpisode(NextEpisodeEvent event) {
+                    openEpisodeEventId = event.getWidgetId();
+                }
+            });
+        }
+        
         fetchEpisodes();
 
         deleteButton.setVisible(!isReadOnly);
@@ -73,6 +83,9 @@ public class GameTableView extends Composite  {
         epsLabel.getElement().getStyle().setWidth(90, Unit.PCT);
         playerNames = new EditableLabel[game.getNumPlayers()];
         List<String> names = game.getPlayers();
+        
+        
+        
         for (int i = 0; i < game.getNumPlayers(); i++) {
             final int index = i;
             playerNames[i] = new EditableLabel();
@@ -129,8 +142,7 @@ public class GameTableView extends Composite  {
                         scores[j] += score[j];
                     }
                 }
-                int min = minScore(scores);
-                int max = maxScore(scores);
+
                 Integer sorted[] = new Integer[scores.length];
                 for (int i = 0; i < scores.length; i++) {
                     sorted[i] = scores[i];
@@ -176,9 +188,12 @@ public class GameTableView extends Composite  {
                 episodes = result;
                 episodeContainer.clear();
                 AppUtils.EVENT_BUS.fireEvent(new ScoreUpdatedEvent());
+                int widgetId = 0;
                 for (Episode episode : result) {
-                    episodeContainer.add(new EpisodeView(episode, isReadOnly));
+                    episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId));
+                    widgetId ++;
                 }
+                AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(openEpisodeEventId));
             }
 
             public void onFailure(Throwable caught) {
@@ -216,36 +231,4 @@ public class GameTableView extends Composite  {
     void refreshClick(ClickEvent e) {
         fetchEpisodes();
     }
-
-    private String getColor(double colorIndex) {
-        StringBuilder sb = new StringBuilder();
-        int index = (int) (colorIndex * 100);
-        sb.append("#0000" + Integer.toHexString(index));
-        return "hsl(277," + index + "%,60%)";
-    }
-
-    private int minScore(int[] scores) {
-
-        int min = scores[0];
-        for (int score : scores) {
-            if (min > score) {
-                min = score;
-            }
-        }
-        return min;
-    }
-
-
-    private int maxScore(int[] scores) {
-        int max = scores[0];
-        for (int score : scores) {
-            if (max < score) {
-                max = score;
-            }
-        }
-        return max;
-    }
-
-
-
 }

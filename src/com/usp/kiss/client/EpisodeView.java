@@ -1,20 +1,18 @@
 package com.usp.kiss.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.OpenEvent;
-import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.usp.kiss.client.custom.EditableLabel;
@@ -29,7 +27,7 @@ public class EpisodeView extends Composite {
 
     interface EpisodeViewUiBinder extends UiBinder<Widget, EpisodeView> {
     }
-    
+
     @UiField Label errorLabel;
 
     @UiField DisclosurePanel mainContainer;
@@ -47,11 +45,13 @@ public class EpisodeView extends Composite {
     private EditableLabel[] scoreViews;
     private boolean inProgress;
     private boolean needsUpdate;
+    private int widgetId;
 
 
-    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly) {
+    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id) {
         initWidget(uiBinder.createAndBindUi(this));
         this.isReadonly = isReadOnly;
+        this.widgetId = id;
         int size = episode.getExpected().length;
         expectedViews = new EditableLabel[size];
         actualViews = new EditableLabel[size];
@@ -72,28 +72,59 @@ public class EpisodeView extends Composite {
             scoreContainer.add(scoreViews[i]);
 
         }
+        if (!isReadOnly) {
+            AppUtils.EVENT_BUS.addHandler(NextEpisodeEvent.TYPE, new NextEpisodeEventHandler() {
+
+                public void onNextEpisode(NextEpisodeEvent event) {
+                    if (event.getWidgetId() == widgetId) {
+                        mainContainer.setOpen(true);
+                        mainContainer.getElement().getStyle().setBackgroundColor("rgb(227, 242, 216)");
+                        expectedViews[0].setFocus(true);
+                    } else {
+                        mainContainer.getElement().getStyle().setBackgroundColor("white");
+                    }
+                }
+            });
+        }
+        
         addTextHandlers(size);
 
         setData(episode);
-        
-        mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
-            
-            public void onOpen(OpenEvent<DisclosurePanel> event) {
-                Timer timer = new Timer() {
-                    @Override
-                    public void run() {
-                        updateData();
-                        mainContainer.setOpen(false);
-                    }
-                };
-                timer.schedule(30000);
-            }
-        });
+
+//        mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+//
+//            public void onOpen(OpenEvent<DisclosurePanel> event) {
+//                Timer timer = new Timer() {
+//                    @Override
+//                    public void run() {
+//                        updateData();
+//                        mainContainer.setOpen(false);
+//                    }
+//                };
+//                timer.schedule(30000);
+//            }
+//        });
     }
 
-    private void addTextHandlers(int size) {
+    private void addTextHandlers(final int size) {
         for (int i = 0 ; i < size; i++ ) {
             final int index = i;
+
+            expectedViews[i].addKeyUpHandler(new KeyUpHandler() {
+
+                public void onKeyUp(KeyUpEvent event) {
+                    int keyCode = event.getNativeEvent().getKeyCode();
+                    if(keyCode >= 48 && keyCode <=57) {
+                        if (index < size -1) {
+                            expectedViews[index + 1].setFocus(true);
+                        } else {
+                            actualViews[0].setFocus(true);
+                        }
+                    }   
+
+                }
+            });
+
             expectedViews[i].addValueChangeHandler(new ValueChangeHandler<String>() {
 
                 public void onValueChange(ValueChangeEvent<String> event) {
@@ -110,7 +141,24 @@ public class EpisodeView extends Composite {
                     }
                 }
             });
-            
+
+            actualViews[i].addKeyUpHandler(new KeyUpHandler() {
+
+                public void onKeyUp(KeyUpEvent event) {
+                    int keyCode = event.getNativeEvent().getKeyCode();
+                    if(keyCode >= 48 && keyCode <=57) {
+                        if (index < size -1) {
+                            actualViews[index + 1].setFocus(true);
+                        } else {
+                            actualViews[0].setFocus(true);
+                            mainContainer.setOpen(false);
+                            AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(widgetId + 1));
+                        }
+                    }   
+
+                }
+            });
+
             actualViews[i].addValueChangeHandler(new ValueChangeHandler<String>() {
 
                 public void onValueChange(ValueChangeEvent<String> event) {
@@ -125,14 +173,12 @@ public class EpisodeView extends Composite {
                     } catch(NumberFormatException e) {
 
                     }
-                    
+
                 }
             });
         }
     }
 
-
-  
     private Episode episode;
     public void setData(Episode epis) {
         this.episode = epis;
@@ -197,7 +243,7 @@ public class EpisodeView extends Composite {
         if (inProgress) {
             return;
         }
-        
+
         needsUpdate = false;
         inProgress = true;
         UpdateEpisodeServiceAsync service = GWT.create(UpdateEpisodeService.class);
@@ -213,7 +259,7 @@ public class EpisodeView extends Composite {
 
             public void onSuccess(Void result) {
                 inProgress = false;
-                
+
                 if (needsUpdate) {
                     updateData();
                 }

@@ -50,7 +50,8 @@
 
 	<g:DockLayoutPanel unit='EM' width="100%">
 		<g:north size='12'>
-			<g:VerticalPanel width="100%" styleName="{style.northHeader}" horizontalAlignment="ALIGN_CENTER">
+			<g:VerticalPanel width="100%" styleName="{style.northHeader}"
+				horizontalAlignment="ALIGN_CENTER">
 				<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE"
 					height="5em" width="100%">
 					<g:Image ui:field="homeButton" styleName="{style.clickImageCss}"
@@ -74,7 +75,7 @@
 
 				<g:HorizontalPanel width="100%" ui:field="aggScoreContainer"
 					styleName="{style.totalScorePanelCss}">
-					
+
 				</g:HorizontalPanel>
 			</g:VerticalPanel>
 		</g:north>
