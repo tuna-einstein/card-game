@@ -1,6 +1,6 @@
 package com.usp.kiss.server.meta;
 
-//@javax.annotation.Generated(value = { "slim3-gen", "@VERSION@" }, date = "2015-05-09 17:36:51")
+//@javax.annotation.Generated(value = { "slim3-gen", "@VERSION@" }, date = "2015-05-14 13:42:27")
 /** */
 public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kiss.shared.model.Episode> {
 
@@ -12,6 +12,9 @@ public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kis
 
     /** */
     public final org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, java.lang.Long> gameId = new org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, java.lang.Long>(this, "gameId", "gameId", long.class);
+
+    /** */
+    public final org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, java.lang.Integer> id = new org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, java.lang.Integer>(this, "id", "id", int.class);
 
     /** */
     public final org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, com.google.appengine.api.datastore.Key> key = new org.slim3.datastore.CoreAttributeMeta<com.usp.kiss.shared.model.Episode, com.google.appengine.api.datastore.Key>(this, "__key__", "key", com.google.appengine.api.datastore.Key.class);
@@ -44,6 +47,7 @@ public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kis
         int[] _expected = blobToSerializable((com.google.appengine.api.datastore.Blob) entity.getProperty("expected"));
         model.setExpected(_expected);
         model.setGameId(longToPrimitiveLong((java.lang.Long) entity.getProperty("gameId")));
+        model.setId(longToPrimitiveInt((java.lang.Long) entity.getProperty("id")));
         model.setKey(entity.getKey());
         model.setTitle((java.lang.String) entity.getProperty("title"));
         model.setVersion((java.lang.Long) entity.getProperty("version"));
@@ -62,6 +66,7 @@ public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kis
         entity.setUnindexedProperty("actual", serializableToBlob(m.getActual()));
         entity.setUnindexedProperty("expected", serializableToBlob(m.getExpected()));
         entity.setProperty("gameId", m.getGameId());
+        entity.setProperty("id", m.getId());
         entity.setProperty("title", m.getTitle());
         entity.setProperty("version", m.getVersion());
         entity.setProperty("slim3.schemaVersion", 1);
@@ -136,6 +141,8 @@ public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kis
         }
         writer.setNextPropertyName("gameId");
         encoder0.encode(writer, m.getGameId());
+        writer.setNextPropertyName("id");
+        encoder0.encode(writer, m.getId());
         if(m.getKey() != null){
             writer.setNextPropertyName("key");
             encoder0.encode(writer, m.getKey());
@@ -162,6 +169,8 @@ public final class EpisodeMeta extends org.slim3.datastore.ModelMeta<com.usp.kis
         // int[](int[]) is not supported.
         reader = rootReader.newObjectReader("gameId");
         m.setGameId(decoder0.decode(reader, m.getGameId()));
+        reader = rootReader.newObjectReader("id");
+        m.setId(decoder0.decode(reader, m.getId()));
         reader = rootReader.newObjectReader("key");
         m.setKey(decoder0.decode(reader, m.getKey()));
         reader = rootReader.newObjectReader("title");

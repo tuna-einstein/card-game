@@ -8,6 +8,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -46,7 +47,6 @@ public class EpisodeView extends Composite {
     private boolean inProgress;
     private boolean needsUpdate;
     private int widgetId;
-
 
     public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -150,9 +150,16 @@ public class EpisodeView extends Composite {
                         if (index < size -1) {
                             actualViews[index + 1].setFocus(true);
                         } else {
-                            actualViews[0].setFocus(true);
-                            mainContainer.setOpen(false);
-                            AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(widgetId + 1));
+                            // Create a new timer that calls Window.alert().
+                            actualViews[index].setFocus(false);
+                            Timer t = new Timer() {
+                              @Override
+                              public void run() {
+                                  mainContainer.setOpen(false);
+                                  AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(widgetId + 1));
+                              }
+                            };
+                            t.schedule(10000);
                         }
                     }   
 

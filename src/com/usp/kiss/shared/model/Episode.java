@@ -28,6 +28,8 @@ public class Episode implements Serializable {
     
     private long gameId;
     
+    private int id;
+    
     public int[] getActual() {
         return actual;
     }
@@ -126,5 +128,13 @@ public class Episode implements Serializable {
 
     public void setGameId(long gameId) {
         this.gameId = gameId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

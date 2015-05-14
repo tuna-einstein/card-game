@@ -14,6 +14,7 @@ public class ListEpisodesServiceImpl implements ListEpisodesService {
         EpisodeMeta meta = EpisodeMeta.get();
         return Datastore.query(meta)
                 .filter(meta.gameId.equal(gameId))
+                .sort(meta.id.asc)
                 .asList();
     }
 

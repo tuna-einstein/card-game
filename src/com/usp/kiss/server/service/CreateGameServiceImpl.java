@@ -57,6 +57,7 @@ public class CreateGameServiceImpl implements CreateGameService {
                 epi.setExpected(getArray(numPlayers));
                 epi.setActual(getArray(numPlayers));
                 epi.setTitle(getTitle(i));
+                epi.setId(i);
                 Datastore.put(tx, epi);
             }
             tx.commit();
