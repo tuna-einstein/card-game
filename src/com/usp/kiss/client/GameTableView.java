@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.moxieapps.gwt.highcharts.client.Chart;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,12 +18,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.usp.kiss.client.chart.GameChart;
+import com.usp.kiss.client.chart.ScoreChart;
+import com.usp.kiss.client.chart.ScoreChart.PlayerScore;
 import com.usp.kiss.client.custom.EditableLabel;
 import com.usp.kiss.client.service.DeleteGameService;
 import com.usp.kiss.client.service.DeleteGameServiceAsync;
@@ -47,6 +57,7 @@ public class GameTableView extends Composite  {
     HorizontalPanel aggScoreContainer;
 
     @UiField Image deleteButton;
+    @UiField Image graphButton;
 
     @UiField
     Label header;
@@ -68,13 +79,13 @@ public class GameTableView extends Composite  {
         initWidget(uiBinder.createAndBindUi(this));
         if (!isReadOnly) {
             AppUtils.EVENT_BUS.addHandler(NextEpisodeEvent.TYPE, new NextEpisodeEventHandler() {
-                
+
                 public void onNextEpisode(NextEpisodeEvent event) {
                     openEpisodeEventId = event.getWidgetId();
                 }
             });
         }
-        
+
         fetchEpisodes();
 
         deleteButton.setVisible(!isReadOnly);
@@ -83,9 +94,9 @@ public class GameTableView extends Composite  {
         epsLabel.getElement().getStyle().setWidth(90, Unit.PCT);
         playerNames = new EditableLabel[game.getNumPlayers()];
         List<String> names = game.getPlayers();
-        
-        
-        
+
+
+
         for (int i = 0; i < game.getNumPlayers(); i++) {
             final int index = i;
             playerNames[i] = new EditableLabel();
@@ -99,7 +110,7 @@ public class GameTableView extends Composite  {
                     playerNames[index].setFocus(false);
                     UpdatePlayerNameServiceAsync service = GWT.create(UpdatePlayerNameService.class);
                     service.update(game.getKey(), event.getValue(), index,
-                        new AsyncCallback<Game>() {
+                            new AsyncCallback<Game>() {
 
                         public void onFailure(Throwable caught) {
                             Window.alert("Error:" + caught.getMessage());
@@ -230,5 +241,42 @@ public class GameTableView extends Composite  {
     @UiHandler("refreshButton")
     void refreshClick(ClickEvent e) {
         fetchEpisodes();
+    }
+
+    @UiHandler("graphButton")
+    void graphClick(ClickEvent e) {
+        ScoreChart scoreChart = new ScoreChart();
+        int index = 0;
+        for (EditableLabel playerName : playerNames) {
+
+            PlayerScore playerScore = new PlayerScore()
+            .setPlayerName(playerName.getText())
+            .setScores(getChartScore(index));
+            scoreChart.addPlayer(playerScore);
+            index += 1;
+        }
+
+        FaceBoardView view = new FaceBoardView();
+        view.addContent(scoreChart.createChart());
+        RootPanel.get().clear();
+        RootPanel.get().add(view);       
+    }
+
+    private Number[] getChartScore(int index) {
+        Number[] result = new Number[20];
+        int count = 0;
+        for (Episode episode : episodes) {
+            if (episode.getExpected()[index] < 0) {
+                break;
+            }
+            int score = AppUtils.getScore(episode.getExpected()[index], episode.getActual()[index]);
+            if (count == 0) {
+                result[count] = score;
+            } else {
+                result[count] = result[count - 1].intValue() + score;
+            }
+            count += 1;
+        }
+        return result;
     }
 }

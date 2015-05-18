@@ -17,6 +17,7 @@ public class DisplayStack {
         }
         RootLayoutPanel.get().add(widget);
         widgets.add(widget);
+        RootLayoutPanel.get().forceLayout();
     }
 
     public static void pop() {

@@ -1,6 +1,6 @@
 package com.usp.kiss.server.meta;
 
-//@javax.annotation.Generated(value = { "slim3-gen", "@VERSION@" }, date = "2015-05-14 13:42:27")
+//@javax.annotation.Generated(value = { "slim3-gen", "@VERSION@" }, date = "2015-05-17 20:02:36")
 /** */
 public final class GameMeta extends org.slim3.datastore.ModelMeta<com.usp.kiss.shared.model.Game> {
 

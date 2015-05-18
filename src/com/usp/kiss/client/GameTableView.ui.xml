@@ -59,6 +59,8 @@
 					<g:Label ui:field="header" styleName="{style.labelCss}" />
 					<g:HorizontalPanel horizontalAlignment="ALIGN_RIGHT"
 						width="100%">
+						<g:Image ui:field="graphButton" styleName="{style.clickImageCss}"
+							url="graph.png" />
 						<g:Image ui:field="refreshButton" styleName="{style.clickImageCss}"
 
 							url="refresh.png" />
