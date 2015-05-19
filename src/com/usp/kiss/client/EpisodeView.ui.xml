@@ -61,7 +61,7 @@
 				<g:HorizontalPanel width="100%" ui:field="scoreContainer">
 					<myc:EditableLabel ui:field="title" />
 				</g:HorizontalPanel>
-				<g:Label ui:field="errorLabel" styleName="{style.errorLabel}" />
+				<g:HTML ui:field="errorLabel" styleName="{style.errorLabel}" />
 				
 			</g:VerticalPanel>
 		</g:customHeader>

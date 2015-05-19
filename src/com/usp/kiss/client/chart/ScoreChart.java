@@ -8,9 +8,12 @@ import org.moxieapps.gwt.highcharts.client.ChartSubtitle;
 import org.moxieapps.gwt.highcharts.client.ChartTitle;
 import org.moxieapps.gwt.highcharts.client.Legend;
 import org.moxieapps.gwt.highcharts.client.Series;
+import org.moxieapps.gwt.highcharts.client.PlotLine;
 import org.moxieapps.gwt.highcharts.client.ToolTip;
 import org.moxieapps.gwt.highcharts.client.ToolTipData;
 import org.moxieapps.gwt.highcharts.client.ToolTipFormatter;
+import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
 
 public class ScoreChart {
 
@@ -80,11 +83,39 @@ public class ScoreChart {
         chart.getYAxis()  
         .setAxisTitleText("Points");  
 
+        Number[] averageScore = new Number[20];
         for (PlayerScore score : players) {
             chart.addSeries(chart.createSeries()  
                     .setName(score.getPlayerName())  
-                    .setPoints(score.getScores()));  
+                    .setPoints(score.getScores()));
+            int index = 0;
+            for (Number number : score.getScores()) {
+                if (number != null) {
+                    if (averageScore[index] == null) {
+                        averageScore[index] = 0;
+                    }
+                    averageScore[index] = averageScore[index].intValue() + number.intValue();
+                }
+                index++;
+            }
         }
+
+        for (int i = 0; i < averageScore.length; i++) {
+            if (averageScore[i] == null) {
+                continue;
+            }
+            averageScore[i] = averageScore[i].floatValue() / players.size();
+        }
+        chart.addSeries(chart.createSeries()  
+                .setName("Average")
+                .setPlotOptions(new SplinePlotOptions()  
+                .setColor("#AA4643")  
+                .setMarker(new Marker()  
+                    .setEnabled(false)  
+                )  
+                .setDashStyle(PlotLine.DashStyle.SHORT_DOT)  
+            )  
+                .setPoints(averageScore));
         return chart;
     }
 }

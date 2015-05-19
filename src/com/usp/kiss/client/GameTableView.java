@@ -29,6 +29,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.usp.kiss.client.chart.GameChart;
+import com.usp.kiss.client.chart.HitChart;
+import com.usp.kiss.client.chart.IndividualChart;
+import com.usp.kiss.client.chart.HitChart.Hit;
 import com.usp.kiss.client.chart.ScoreChart;
 import com.usp.kiss.client.chart.ScoreChart.PlayerScore;
 import com.usp.kiss.client.custom.EditableLabel;
@@ -246,18 +249,41 @@ public class GameTableView extends Composite  {
     @UiHandler("graphButton")
     void graphClick(ClickEvent e) {
         ScoreChart scoreChart = new ScoreChart();
+        Hit[] hits = new Hit[playerNames.length];
         int index = 0;
+        
         for (EditableLabel playerName : playerNames) {
 
             PlayerScore playerScore = new PlayerScore()
             .setPlayerName(playerName.getText())
             .setScores(getChartScore(index));
             scoreChart.addPlayer(playerScore);
+            
+            hits[index] = new Hit();
+            hits[index].setPlayerName(playerName.getText());
+            
             index += 1;
         }
 
+        for (Episode episode : episodes) {
+            int[] expected = episode.getExpected();
+            int[] actual = episode.getActual();
+            int[] score = AppUtils.computeScore(episode);
+            for (int i = 0; i < expected.length; i++) {
+                if (expected[i] == actual[i] && expected[i] > 0) {
+                    hits[i].incrementHitCountByOne();
+                    hits[i].incrementScore(score[i]);
+                }
+            }
+        }
+        
         FaceBoardView view = new FaceBoardView();
         view.addContent(scoreChart.createChart());
+        view.addContent(new HitChart().createChart(hits));
+        for (int i = 0; i < playerNames.length; i++) {
+            view.addContent(new IndividualChart().createChart(getIndividualData(i)));
+        }
+        
         RootPanel.get().clear();
         RootPanel.get().add(view);       
     }
@@ -278,5 +304,36 @@ public class GameTableView extends Composite  {
             count += 1;
         }
         return result;
+    }
+    
+    private IndividualChart.Data getIndividualData(int index) {
+        IndividualChart.Data data = new IndividualChart.Data();
+        data.setName(playerNames[index].getText());
+        int c = 0;
+        data.setExpected(new Number[20]);
+        data.setActual(new Number[20]);
+        data.setScore(new Number[20]);
+        
+        
+        for (Episode episode : episodes) {
+            int exp = episode.getExpected()[index];
+            int act = episode.getActual()[index];
+            int score = AppUtils.getScore(exp, act);
+            if (exp < 0) {
+                break;
+            }
+            data.getActual()[c] = act;
+            data.getExpected()[c] = exp;
+            if (c == 0) {
+                data.getScore()[c] = score;
+            } else {
+                data.getScore()[c] = data.getScore()[c - 1].intValue() + score;
+            }
+            c++;
+        }
+        
+        return data;
+        
+        
     }
 }

@@ -3,6 +3,10 @@ package com.usp.kiss.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -13,6 +17,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,7 +34,7 @@ public class EpisodeView extends Composite {
     interface EpisodeViewUiBinder extends UiBinder<Widget, EpisodeView> {
     }
 
-    @UiField Label errorLabel;
+    @UiField HTML errorLabel;
 
     @UiField DisclosurePanel mainContainer;
 
@@ -91,19 +96,18 @@ public class EpisodeView extends Composite {
 
         setData(episode);
 
-//        mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
-//
-//            public void onOpen(OpenEvent<DisclosurePanel> event) {
-//                Timer timer = new Timer() {
-//                    @Override
-//                    public void run() {
-//                        updateData();
-//                        mainContainer.setOpen(false);
-//                    }
-//                };
-//                timer.schedule(30000);
-//            }
-//        });
+        mainContainer.addCloseHandler(new CloseHandler<DisclosurePanel>() {
+            
+            public void onClose(CloseEvent<DisclosurePanel> event) {
+                errorLabel.setHTML("");
+            }
+        });
+        mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+            
+            public void onOpen(OpenEvent<DisclosurePanel> event) {
+               sanityCheck();
+            }
+        });
     }
 
     private void addTextHandlers(final int size) {
@@ -218,6 +222,7 @@ public class EpisodeView extends Composite {
             }
             total += v;
         }
+        int expectedTotal = total;
         String message = ""; 
         if (skip != expected.length && cardCount == total) {
             message = "Error : Count mismatch in expected.";
@@ -240,8 +245,16 @@ public class EpisodeView extends Composite {
                 message = "Error : ";
             }
             message = message + " Count mismatch in actual.";
-        } 
-        errorLabel.setText(message);
+        }
+        if (message.isEmpty()) {
+            message = "Expected : " + expectedTotal + "<br/>";
+            message = message + "Actual : " + cardCount;
+            
+        }
+        errorLabel.setHTML(message);
+        if (!mainContainer.isOpen()) {
+            errorLabel.setText("");
+        }
     }
 
     private void updateData() {
