@@ -30,5 +30,4 @@ public class UpdatePlayerNameServiceImpl implements UpdatePlayerNameService {
         
         return game;
     }
-
 }

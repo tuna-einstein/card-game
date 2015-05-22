@@ -58,3 +58,11 @@ h1 {
 .gwt-TextBox-readonly {
   color: yellow!important;
 }
+
+.FlexTable-OddRow {
+  background-color: #eeeeee;
+}
+
+.FlexTable-EvenRow {
+  background-color:  #dddddd;
+}

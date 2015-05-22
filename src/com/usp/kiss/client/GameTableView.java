@@ -4,13 +4,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.moxieapps.gwt.highcharts.client.Chart;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -18,20 +15,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.usp.kiss.client.chart.GameChart;
 import com.usp.kiss.client.chart.HitChart;
-import com.usp.kiss.client.chart.IndividualChart;
 import com.usp.kiss.client.chart.HitChart.Hit;
+import com.usp.kiss.client.chart.IndividualChart;
 import com.usp.kiss.client.chart.ScoreChart;
 import com.usp.kiss.client.chart.ScoreChart.PlayerScore;
 import com.usp.kiss.client.custom.EditableLabel;
@@ -79,6 +72,7 @@ public class GameTableView extends Composite  {
     public GameTableView(Game gam, boolean isReadOnly) {
         this.game = gam;
         this.isReadOnly = isReadOnly;
+        AppUtils.setPlayerNames(game.getPlayers());
         initWidget(uiBinder.createAndBindUi(this));
         if (!isReadOnly) {
             AppUtils.EVENT_BUS.addHandler(NextEpisodeEvent.TYPE, new NextEpisodeEventHandler() {
@@ -96,7 +90,7 @@ public class GameTableView extends Composite  {
         epsLabel.setValue("Eps");
         epsLabel.getElement().getStyle().setWidth(90, Unit.PCT);
         playerNames = new EditableLabel[game.getNumPlayers()];
-        List<String> names = game.getPlayers();
+        List<String> names = AppUtils.getPlayerNames();
 
 
 
@@ -122,6 +116,7 @@ public class GameTableView extends Composite  {
 
                         public void onSuccess(Game result) {
                             game = result;
+                            AppUtils.setPlayerNames(game.getPlayers());
                         }
                     });
 
@@ -204,7 +199,8 @@ public class GameTableView extends Composite  {
                 AppUtils.EVENT_BUS.fireEvent(new ScoreUpdatedEvent());
                 int widgetId = 0;
                 for (Episode episode : result) {
-                    episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId));
+                    String name =  playerNames[widgetId % playerNames.length].getText();
+                    episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId, name));
                     widgetId ++;
                 }
                 AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(openEpisodeEventId));
@@ -280,9 +276,9 @@ public class GameTableView extends Composite  {
         FaceBoardView view = new FaceBoardView();
         view.addContent(scoreChart.createChart());
         view.addContent(new HitChart().createChart(hits));
-        for (int i = 0; i < playerNames.length; i++) {
-            view.addContent(new IndividualChart().createChart(getIndividualData(i)));
-        }
+//        for (int i = 0; i < playerNames.length; i++) {
+//            view.addContent(new IndividualChart().createChart(getIndividualData(i)));
+//        }
         
         RootPanel.get().clear();
         RootPanel.get().add(view);       

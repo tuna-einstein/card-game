@@ -1,8 +1,11 @@
 package com.usp.kiss.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.user.client.Window;
 import com.usp.kiss.shared.model.Episode;
 
 public class AppUtils {
@@ -10,6 +13,8 @@ public class AppUtils {
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
     
     private static String userEmail;
+    
+    private static List<String> playerNames;
     
     public static int getScore(int expected, int actual) {
         if (expected < 0 || actual < 0) {
@@ -44,6 +49,43 @@ public class AppUtils {
     public static void setUserEmail(String userEmail) {
         AppUtils.userEmail = userEmail;
     }
+
+    public static List<String> getPlayerNames() {
+        return playerNames;
+    }
+
+    public static void setPlayerNames(List<String> playerNames) {
+        AppUtils.playerNames = playerNames;
+        for (int i = 0; i < playerNames.size(); i++) {
+            playerNames.set(i, capitalize(playerNames.get(i)));
+        }
+    }
+    
+    public static int getCardCount(String episodeTitle) {
+        return Integer.parseInt(episodeTitle.substring(0, episodeTitle.length() - 1));
+    }
+    
+    public static Suits getSuit(String episodeTitle) {
+        String v = episodeTitle.substring(episodeTitle.length() - 1);
+        if (v.equals("H")) {
+            return Suits.HEART;
+        }
+        if (v.equals("S")) {
+            return Suits.SPADE;
+        }
+        if (v.equals("D")) {
+            return Suits.DIAMOND;
+        }
+        if (v.equals("C")) {
+            return Suits.CLUB;
+        }
+        return Suits.NEUTRAL;
+    }
+    
+
+    private static String capitalize(final String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+     }
 }
 
 

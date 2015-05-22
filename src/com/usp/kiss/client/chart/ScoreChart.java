@@ -50,7 +50,7 @@ public class ScoreChart {
 
     public Chart createChart() {
         Chart chart = new Chart();
-        chart.setType(Series.Type.LINE)
+        chart.setType(Series.Type.SPLINE)
         .setMarginRight(130)  
         .setMarginBottom(25)  
         .setChartTitle(new ChartTitle()  
@@ -85,7 +85,7 @@ public class ScoreChart {
 
         Number[] averageScore = new Number[20];
         for (PlayerScore score : players) {
-            chart.addSeries(chart.createSeries()  
+            chart.addSeries(chart.createSeries()
                     .setName(score.getPlayerName())  
                     .setPoints(score.getScores()));
             int index = 0;

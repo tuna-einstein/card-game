@@ -1,6 +1,7 @@
 package com.usp.kiss.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -12,10 +13,12 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -35,6 +38,7 @@ public class EpisodeView extends Composite {
     }
 
     @UiField HTML errorLabel;
+    @UiField HTML dealerNameLabel;
 
     @UiField DisclosurePanel mainContainer;
 
@@ -42,7 +46,7 @@ public class EpisodeView extends Composite {
     @UiField HorizontalPanel expectedValueContainer;
     @UiField HorizontalPanel scoreContainer;
 
-    @UiField EditableLabel title;
+    @UiField EditableLabel titleLabel;
 
 
     private boolean isReadonly;
@@ -52,16 +56,20 @@ public class EpisodeView extends Composite {
     private boolean inProgress;
     private boolean needsUpdate;
     private int widgetId;
+    private final String playerName;
+    private final ExpectedScoreBoardView expectedScoreBoardView = new ExpectedScoreBoardView();
 
-    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id) {
+    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id, String name) {
         initWidget(uiBinder.createAndBindUi(this));
         this.isReadonly = isReadOnly;
         this.widgetId = id;
         int size = episode.getExpected().length;
+        this.playerName = name;
         expectedViews = new EditableLabel[size];
         actualViews = new EditableLabel[size];
         scoreViews = new EditableLabel[size];
-        title.setReadOnly(true);
+        titleLabel.setReadOnly(true);
+        dealerNameLabel.setText("Dealer : " + name);
 
         for (int i = 0; i < size; i++) {
             expectedViews[i] = new EditableLabel();
@@ -100,11 +108,13 @@ public class EpisodeView extends Composite {
             
             public void onClose(CloseEvent<DisclosurePanel> event) {
                 errorLabel.setHTML("");
+                dealerNameLabel.setHTML("");
             }
         });
         mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
             
             public void onOpen(OpenEvent<DisclosurePanel> event) {
+               dealerNameLabel.setHTML("Dealer : " + playerName);
                sanityCheck();
             }
         });
@@ -140,6 +150,10 @@ public class EpisodeView extends Composite {
                         scoreViews[index].setText(String.valueOf(updatedScore));
                         sanityCheck();
                         updateData();
+                        if (index == size - 1) {
+                            expectedScoreBoardView.setExpected(episode.getExpected(), episode.getTitle(), widgetId);
+                            expectedScoreBoardView.center();
+                        }
                     } catch(NumberFormatException e) {
 
                     }
@@ -193,7 +207,7 @@ public class EpisodeView extends Composite {
     private Episode episode;
     public void setData(Episode epis) {
         this.episode = epis;
-        title.setText(episode.getTitle());
+        titleLabel.setText(episode.getTitle());
         int[] expected = episode.getExpected();
         int[] actual = episode.getActual();
         int[] score = AppUtils.computeScore(episode);
@@ -246,11 +260,7 @@ public class EpisodeView extends Composite {
             }
             message = message + " Count mismatch in actual.";
         }
-        if (message.isEmpty()) {
-            message = "Expected : " + expectedTotal + "<br/>";
-            message = message + "Actual : " + cardCount;
-            
-        }
+      
         errorLabel.setHTML(message);
         if (!mainContainer.isOpen()) {
             errorLabel.setText("");
@@ -285,5 +295,11 @@ public class EpisodeView extends Composite {
                 }
             }
         });
+    }
+    
+    @UiHandler("enlargeButton")
+    public void onClickEnlargeButton(ClickEvent e) {
+        expectedScoreBoardView.setExpected(episode.getExpected(), episode.getTitle(), widgetId);
+        expectedScoreBoardView.center();
     }
 }
