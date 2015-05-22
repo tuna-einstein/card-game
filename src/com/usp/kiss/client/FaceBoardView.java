@@ -28,12 +28,12 @@ public class FaceBoardView extends Composite {
 
   
 
-    @UiHandler("backButton")
-    void onClick(ClickEvent e) {
-        RootPanel.get().clear();
-        RootPanel.get().add(RootLayoutPanel.get());
-    }
-    
+//    @UiHandler("backButton")
+//    void onClick(ClickEvent e) {
+//        RootPanel.get().clear();
+//        RootPanel.get().add(RootLayoutPanel.get());
+//    }
+//    
     public void addContent(Widget widget) {
         container.add(widget);
     }

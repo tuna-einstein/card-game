@@ -1,21 +1,28 @@
 package com.usp.kiss.client;
 
+import java.awt.Dialog;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.FontStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -24,6 +31,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.usp.kiss.client.chart.HitChart;
 import com.usp.kiss.client.chart.HitChart.Hit;
+import com.usp.kiss.client.chart.ExpectationChart;
 import com.usp.kiss.client.chart.IndividualChart;
 import com.usp.kiss.client.chart.ScoreChart;
 import com.usp.kiss.client.chart.ScoreChart.PlayerScore;
@@ -273,15 +281,41 @@ public class GameTableView extends Composite  {
             }
         }
         
+        HTML divider = new HTML();
+        divider.setHTML("<HR COLOR=\"green\" WIDTH=\"100%\">");
+        
+        
         FaceBoardView view = new FaceBoardView();
         view.addContent(scoreChart.createChart());
-        view.addContent(new HitChart().createChart(hits));
+        
+        view.addContent(divider);
+        view.addContent(ExpectationChart.createChart(getExpectationDiff()));
+        DialogBox box = new DialogBox(true, true) {
+            @Override
+            protected void onPreviewNativeEvent(NativePreviewEvent event) {
+                super.onPreviewNativeEvent(event);
+                switch (event.getTypeInt()) {
+                case Event.ONKEYDOWN:
+                    if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+                        hide();
+                    }
+                    break;
+                }
+            }  
+        };
+        box.setGlassEnabled(true);
+        box.setText("Press Esc to exit...");
+        box.getCaption().asWidget().getElement().getStyle().setFontStyle(FontStyle.ITALIC);
+        box.setWidth("1200px");
+        box.setWidget(view);
+        box.center();
+//        view.addContent(new HitChart().createChart(hits));
 //        for (int i = 0; i < playerNames.length; i++) {
 //            view.addContent(new IndividualChart().createChart(getIndividualData(i)));
 //        }
         
-        RootPanel.get().clear();
-        RootPanel.get().add(view);       
+//        RootPanel.get().clear();
+//        RootPanel.get().add(view);       
     }
 
     private Number[] getChartScore(int index) {
@@ -297,6 +331,25 @@ public class GameTableView extends Composite  {
             } else {
                 result[count] = result[count - 1].intValue() + score;
             }
+            count += 1;
+        }
+        return result;
+    }
+    
+    private Number[] getExpectationDiff() {
+        Number[] result = new Number[20];
+        int count = 0;
+        for (Episode episode : episodes) {
+            int [] expected = episode.getExpected();
+            int sum = 0;
+            for (int exp : expected) {
+                if (exp < 0) {
+                    return result;
+                }
+                sum += exp;
+            }
+            int cardCount = AppUtils.getCardCount(episode.getTitle());
+            result[count] = sum - cardCount;
             count += 1;
         }
         return result;

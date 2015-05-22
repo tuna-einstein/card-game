@@ -50,14 +50,14 @@ public class ScoreChart {
 
     public Chart createChart() {
         Chart chart = new Chart();
-        chart.setType(Series.Type.SPLINE)
+        chart.setType(Series.Type.LINE)
         .setMarginRight(130)  
         .setMarginBottom(25)  
         .setChartTitle(new ChartTitle()  
         .setText("Points Graph")  
         .setX(-20))
         .setChartSubtitle(new ChartSubtitle()  
-        .setText("Source: ")
+        .setText("Source: cardsnotnot.appspot.com")
         .setX(-20))
         .setLegend(new Legend()  
         .setLayout(Legend.Layout.VERTICAL)  

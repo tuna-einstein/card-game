@@ -12,7 +12,8 @@
 		width: 4em;
 	}
 	</ui:style>
+	<g:ScrollPanel height="500px">
 	<g:VerticalPanel ui:field="container" width="100%">
-		<g:Image url="back.png" ui:field="backButton" styleName="{style.clickImageCss}"/>
 	</g:VerticalPanel>
+	</g:ScrollPanel>
 </ui:UiBinder> 

@@ -91,10 +91,10 @@ public class ExpectedScoreBoardView extends DialogBox {
         
         containerView.add(table);
         if (total < cardCount) {
-            descLabel.setHTML("Under expectation by : " + (cardCount - total));
+            descLabel.setHTML("Under expected by : " + (cardCount - total));
         }
         if (total > cardCount) {
-            descLabel.setHTML("Over expectation by : " + (total - cardCount));
+            descLabel.setHTML("Over expected by : " + (total - cardCount));
         }
         if (total == cardCount) {
             descLabel.setHTML("Card count and expectation count is same");
