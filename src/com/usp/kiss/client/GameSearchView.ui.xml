@@ -10,22 +10,27 @@
 		cursor: pointer;
 		margin-left: 1em;
 	}
+	
 	.suggestBox {
-	text-align: left;
-
+		text-align: left;
 	}
 	</ui:style>
 
-	<g:VerticalPanel width="100%" horizontalAlignment="ALIGN_CENTER ">
+	<g:ScrollPanel>
+		<g:VerticalPanel width="100%" horizontalAlignment="ALIGN_CENTER "
+			height="100%">
 
-		<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE"
-			height="3em">
-			<g:SuggestBox ui:field="suggestBox" width="20em" focus="true" addStyleNames="{style.suggestBox}"/>
-			<g:Image url="search.png" ui:field="search" width="4em"
-				styleName="{style.imageFocus}"></g:Image>
-		</g:HorizontalPanel>
-		<g:ScrollPanel>
+			<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE"
+				height="3em">
+				<g:SuggestBox ui:field="suggestBox" width="20em" focus="true"
+					addStyleNames="{style.suggestBox}" />
+				<g:Image url="search.png" ui:field="search" width="4em"
+					styleName="{style.imageFocus}"></g:Image>
+			</g:HorizontalPanel>
+
 			<g:VerticalPanel ui:field="resultContainer" height="100%" />
-		</g:ScrollPanel>
-	</g:VerticalPanel>
+
+		</g:VerticalPanel>
+	</g:ScrollPanel>
+
 </ui:UiBinder> 
