@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -64,7 +66,7 @@ public class GameSearchView extends Composite {
 
     @UiHandler("search")
     public void onSearch(ClickEvent event) {
-       
+
         search();
     }
 
@@ -130,6 +132,12 @@ public class GameSearchView extends Composite {
                 isBusy = false;
             }
         });
-
+    }
+    
+    @UiHandler("suggestBox")
+    public void onTextAdd(KeyDownEvent event) {
+        if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+            search();
+        }
     }
 }
