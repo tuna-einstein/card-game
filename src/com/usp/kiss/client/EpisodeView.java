@@ -18,13 +18,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.usp.kiss.client.custom.EditableLabel;
+import com.usp.kiss.client.event.PlayerNameChangedEvent;
+import com.usp.kiss.client.event.PlayerNameChangedEventHandler;
 import com.usp.kiss.client.service.UpdateEpisodeService;
 import com.usp.kiss.client.service.UpdateEpisodeServiceAsync;
 import com.usp.kiss.shared.model.Episode;
@@ -56,20 +56,24 @@ public class EpisodeView extends Composite {
     private boolean inProgress;
     private boolean needsUpdate;
     private int widgetId;
-    private final String playerName;
     private final ExpectedScoreBoardView expectedScoreBoardView = new ExpectedScoreBoardView();
 
-    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id, String name) {
+    public @UiConstructor EpisodeView(final Episode episode, boolean isReadOnly, int id) {
         initWidget(uiBinder.createAndBindUi(this));
         this.isReadonly = isReadOnly;
         this.widgetId = id;
         int size = episode.getExpected().length;
-        this.playerName = name;
         expectedViews = new EditableLabel[size];
         actualViews = new EditableLabel[size];
         scoreViews = new EditableLabel[size];
         titleLabel.setReadOnly(true);
-        dealerNameLabel.setText("Dealer : " + name);
+        dealerNameLabel.setText("Dealer : " + AppUtils.getDealer(id));
+        AppUtils.EVENT_BUS.addHandler(PlayerNameChangedEvent.TYPE, new PlayerNameChangedEventHandler() {
+
+            public void onPlayerNameChange(PlayerNameChangedEvent event) {
+                dealerNameLabel.setText("Dealer : " + AppUtils.getDealer(widgetId));
+            }
+        });
 
         for (int i = 0; i < size; i++) {
             expectedViews[i] = new EditableLabel();
@@ -93,29 +97,30 @@ public class EpisodeView extends Composite {
                         mainContainer.setOpen(true);
                         mainContainer.getElement().getStyle().setBackgroundColor("rgb(227, 242, 216)");
                         expectedViews[0].setFocus(true);
+                        dealerNameLabel.setText("Dealer : " + AppUtils.getDealer(widgetId));
                     } else {
                         mainContainer.getElement().getStyle().setBackgroundColor("white");
                     }
                 }
             });
         }
-        
+
         addTextHandlers(size);
 
         setData(episode);
 
         mainContainer.addCloseHandler(new CloseHandler<DisclosurePanel>() {
-            
+
             public void onClose(CloseEvent<DisclosurePanel> event) {
                 errorLabel.setHTML("");
                 dealerNameLabel.setHTML("");
             }
         });
         mainContainer.addOpenHandler(new OpenHandler<DisclosurePanel>() {
-            
+
             public void onOpen(OpenEvent<DisclosurePanel> event) {
-               dealerNameLabel.setHTML("Dealer : " + playerName);
-               sanityCheck();
+                dealerNameLabel.setText("Dealer : " + AppUtils.getDealer(widgetId));
+                sanityCheck();
             }
         });
     }
@@ -171,11 +176,11 @@ public class EpisodeView extends Composite {
                             // Create a new timer that calls Window.alert().
                             actualViews[index].setFocus(false);
                             Timer t = new Timer() {
-                              @Override
-                              public void run() {
-                                  mainContainer.setOpen(false);
-                                  AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(widgetId + 1));
-                              }
+                                @Override
+                                public void run() {
+                                    mainContainer.setOpen(false);
+                                    AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(widgetId + 1));
+                                }
                             };
                             t.schedule(10000);
                         }
@@ -260,7 +265,7 @@ public class EpisodeView extends Composite {
             }
             message = message + " Count mismatch in actual.";
         }
-      
+
         errorLabel.setHTML(message);
         if (!mainContainer.isOpen()) {
             errorLabel.setText("");
@@ -296,7 +301,7 @@ public class EpisodeView extends Composite {
             }
         });
     }
-    
+
     @UiHandler("enlargeButton")
     public void onClickEnlargeButton(ClickEvent e) {
         expectedScoreBoardView.setExpected(episode.getExpected(), episode.getTitle(), widgetId);

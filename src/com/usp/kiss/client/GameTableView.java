@@ -36,6 +36,8 @@ import com.usp.kiss.client.chart.IndividualChart;
 import com.usp.kiss.client.chart.ScoreChart;
 import com.usp.kiss.client.chart.ScoreChart.PlayerScore;
 import com.usp.kiss.client.custom.EditableLabel;
+import com.usp.kiss.client.event.PlayerNameChangedEvent;
+import com.usp.kiss.client.event.RefreshDataEvent;
 import com.usp.kiss.client.service.DeleteGameService;
 import com.usp.kiss.client.service.DeleteGameServiceAsync;
 import com.usp.kiss.client.service.ListEpisodesService;
@@ -125,6 +127,7 @@ public class GameTableView extends Composite  {
                         public void onSuccess(Game result) {
                             game = result;
                             AppUtils.setPlayerNames(game.getPlayers());
+                            AppUtils.EVENT_BUS.fireEvent(new PlayerNameChangedEvent());
                         }
                     });
 
@@ -159,6 +162,8 @@ public class GameTableView extends Composite  {
                         scores[j] += score[j];
                     }
                 }
+                
+                AppUtils.setAggScores(scores);
 
                 Integer sorted[] = new Integer[scores.length];
                 for (int i = 0; i < scores.length; i++) {
@@ -207,8 +212,7 @@ public class GameTableView extends Composite  {
                 AppUtils.EVENT_BUS.fireEvent(new ScoreUpdatedEvent());
                 int widgetId = 0;
                 for (Episode episode : result) {
-                    String name =  playerNames[widgetId % playerNames.length].getText();
-                    episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId, name));
+                    episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId));
                     widgetId ++;
                 }
                 AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(openEpisodeEventId));
@@ -222,7 +226,9 @@ public class GameTableView extends Composite  {
 
     @UiHandler("homeButton")
     void handleClick(ClickEvent e) {
-        Window.Location.reload();
+      //  Window.Location.reload();
+        DisplayStack.pop();
+        AppUtils.EVENT_BUS.fireEvent(new RefreshDataEvent());
     }
 
     @UiHandler("deleteButton")

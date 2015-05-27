@@ -6,15 +6,18 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
+import com.usp.kiss.client.event.AggScoreChangedEvent;
 import com.usp.kiss.shared.model.Episode;
 
 public class AppUtils {
 
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
     
-    private static String userEmail;
+    private static String userEmail = "";
     
     private static List<String> playerNames;
+    
+    private static int[] aggScores;
     
     public static int getScore(int expected, int actual) {
         if (expected < 0 || actual < 0) {
@@ -61,6 +64,10 @@ public class AppUtils {
         }
     }
     
+    public static String getDealer(int widgetId) {
+        return playerNames.get(widgetId % playerNames.size());
+    }
+    
     public static int getCardCount(String episodeTitle) {
         return Integer.parseInt(episodeTitle.substring(0, episodeTitle.length() - 1));
     }
@@ -86,6 +93,25 @@ public class AppUtils {
     private static String capitalize(final String line) {
         return Character.toUpperCase(line.charAt(0)) + line.substring(1);
      }
+
+    public static int[] getAggScores() {
+        return aggScores;
+    }
+
+    public static void setAggScores(int[] aggScores) {
+        AppUtils.aggScores = aggScores;
+        AppUtils.EVENT_BUS.fireEvent(new AggScoreChangedEvent());
+    }
+    
+    public static int getMaxScore() {
+      int max = aggScores[0];
+      for (int v : aggScores) {
+          if (max < v) {
+              max = v;
+          }
+      }
+      return max;
+    }
 }
 
 

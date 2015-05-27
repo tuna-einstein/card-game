@@ -22,7 +22,7 @@ import com.usp.kiss.shared.model.Game;
 public class CreateGameView extends Composite {
 
     private static CreateGameViewUiBinder uiBinder = GWT
-        .create(CreateGameViewUiBinder.class);
+            .create(CreateGameViewUiBinder.class);
 
     interface CreateGameViewUiBinder extends UiBinder<Widget, CreateGameView> {
     }
@@ -35,28 +35,30 @@ public class CreateGameView extends Composite {
     Image proceed;
     @UiField
     TextBox playerCount;
-    
+
     @UiHandler("proceed")
     void onProceed(ClickEvent event) {
         createGame();
         DisplayStack.push(new Label("please wait..."));
     }
-    
-    
+
+
     private void createGame() {
         CreateGameServiceAsync gameService = GWT.create(CreateGameService.class);
         gameService.create(Integer.parseInt(playerCount.getText()), new AsyncCallback<Game>() {
-            
+
             public void onSuccess(Game result) {
+                DisplayStack.pop();
                 DisplayStack.push(new GameTableView(result, false));
             }
-            
+
             public void onFailure(Throwable caught) {
-               if (caught instanceof AuthException) {
-                   Window.open(((AuthException) caught).getLoginUrl(),  "_self", "");
-               } else {
-                   Window.alert("Error:" + caught);
-               }
+                DisplayStack.pop();
+                if (caught instanceof AuthException) {
+                    Window.open(((AuthException) caught).getLoginUrl(),  "_self", "");
+                } else {
+                    Window.alert("Error:" + caught);
+                }
             }
         });
     }

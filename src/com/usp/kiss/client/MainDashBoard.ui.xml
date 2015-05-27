@@ -30,7 +30,7 @@
 		</g:layer>
 		<g:layer top='4em' height='100%'>
 			<g:TabLayoutPanel ui:field="tabPanel" barUnit="EM"
-				barHeight="6" width="100%" height="100%">
+				barHeight="6" width="100%" height="90%">
 				<g:tab>
 					<g:customHeader>
 						<g:Image url="search.png" height="4em" ui:field="search" />

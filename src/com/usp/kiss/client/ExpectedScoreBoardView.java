@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.usp.kiss.client.event.AggScoreChangedEvent;
+import com.usp.kiss.client.event.AggScoreChangedEventHandler;
 
 public class ExpectedScoreBoardView extends DialogBox {
 
@@ -33,7 +35,6 @@ public class ExpectedScoreBoardView extends DialogBox {
         setAutoHideEnabled(true);
         setGlassEnabled(true);
         setText("Press Esc to exit...");
-       
     }
     
     @Override
@@ -63,31 +64,43 @@ public class ExpectedScoreBoardView extends DialogBox {
         table.setCellPadding(5);
         HTMLTable.RowFormatter rf = table.getRowFormatter();
         int total = 0;
+        int maxScore = AppUtils.getMaxScore();
+        
+        HTML trail = new HTML();
+        trail.setHTML("<div align=\"center\"><h2>Trail by</h2></div>");
+        table.setWidget(0, 2, trail);
         
         for (int i = 0; i < expected.length; i++) {
             int index = (episodeId + i + 1) % AppUtils.getPlayerNames().size();
             total += expected[index];
             HTML name = new HTML();
             name.setHTML("<div style=\"margin-left:15%;\"><h2>" + AppUtils.getPlayerNames().get(index) + " </h2></div>");
+            table.setWidget(i + 1, 0, name);
             
-            table.setWidget(i, 0, name);
             HTML value = new HTML();
             value.setHTML("<div align=\"center\"><h2>" + expected[index] + "</h2></div>");
-            table.setWidget(i, 1, value);
-            if (i % 2 == 1) {
-                rf.addStyleName(i, "FlexTable-OddRow");
-            } else {
-                rf.addStyleName(i, "FlexTable-EvenRow");
-            }
+            table.setWidget(i + 1, 1, value);
             
+            
+            HTML behind = new HTML();
+            behind.setHTML("<div align=\"center\"><h2>"
+               + (maxScore - AppUtils.getAggScores()[index])
+               + "</h2></div>");
+            table.setWidget(i + 1, 2, behind);
+            
+            if (i % 2 == 1) {
+                rf.addStyleName(i + 1, "FlexTable-OddRow");
+            } else {
+                rf.addStyleName(i + 1, "FlexTable-EvenRow");
+            }
         }
         HTML totalView = new HTML();
         totalView.setHTML("<div style=\"margin-left:15%;color:blue;\"><h2> Total </h2></div>");
-        table.setWidget(expected.length, 0, totalView);
+        table.setWidget(expected.length + 1, 0, totalView);
         
         HTML totalCountView = new HTML();
         totalCountView.setHTML("<div style=\"color:blue;\" align=\"center\"><h2>"+ total + " </h2></div>");
-        table.setWidget(expected.length, 1, totalCountView);
+        table.setWidget(expected.length + 1, 1, totalCountView);
         
         containerView.add(table);
         if (total < cardCount) {

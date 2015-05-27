@@ -19,8 +19,8 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.usp.kiss.client.service.GetLoginEmailService;
-import com.usp.kiss.client.service.GetLoginEmailServiceAsync;
+import com.usp.kiss.client.event.RefreshDataEvent;
+import com.usp.kiss.client.event.RefreshDataEventHandler;
 import com.usp.kiss.client.service.SearchGamesService;
 import com.usp.kiss.client.service.SearchGamesServiceAsync;
 import com.usp.kiss.client.service.SearchNameService;
@@ -46,17 +46,34 @@ public class GameSearchView extends Composite {
 
     MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
+    private String searchString = "";
+
     public @UiConstructor GameSearchView() {
         suggestBox = new SuggestBox(oracle);
         initWidget(uiBinder.createAndBindUi(this));
+        AppUtils.EVENT_BUS.addHandler(RefreshDataEvent.TYPE, new RefreshDataEventHandler() {
+
+            public void refreshData(RefreshDataEvent event) {
+                if (isAttached() && !searchString.isEmpty()) {
+                    suggestBox.setText(searchString);
+                    search();
+                }
+            }
+        });
     }
 
     @UiHandler("search")
     public void onSearch(ClickEvent event) {
+       
+        search();
+    }
+
+    private void search() {
         Label label = new Label("Please wait...");
         resultContainer.clear();
         resultContainer.add(label);
         SearchGamesServiceAsync service = GWT.create(SearchGamesService.class);
+        searchString = suggestBox.getText();
         service.search(suggestBox.getText(), new AsyncCallback<List<Game>>() {
 
             public void onFailure(Throwable caught) {
@@ -79,7 +96,7 @@ public class GameSearchView extends Composite {
 
     @UiHandler("suggestBox")
     public void onTextAddFinish(ValueChangeEvent<String> event) {
-       
+
     }
 
     @UiHandler("suggestBox")
@@ -104,7 +121,7 @@ public class GameSearchView extends Composite {
                 oracle.clear();
                 for (SearchPrefix prefix : result) {
                     oracle.add(prefix.getPrefix());
-                    
+
                 }
                 isBusy = false;
             }
