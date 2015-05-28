@@ -83,6 +83,7 @@ public class GameTableView extends Composite  {
         this.game = gam;
         this.isReadOnly = isReadOnly;
         AppUtils.setPlayerNames(game.getPlayers());
+        
         initWidget(uiBinder.createAndBindUi(this));
         if (!isReadOnly) {
             AppUtils.EVENT_BUS.addHandler(NextEpisodeEvent.TYPE, new NextEpisodeEventHandler() {
@@ -153,6 +154,9 @@ public class GameTableView extends Composite  {
 
             public void onScoreUpdated(ScoreUpdatedEvent event) {
                 int[] scores = null;
+                if (episodes == null) {
+                    return;
+                }
                 for (Episode episode : episodes) {
                     int score[] = AppUtils.computeScore(episode);
                     if (scores == null) {
@@ -161,6 +165,9 @@ public class GameTableView extends Composite  {
                     for (int j = 0; j < scores.length; j++) {
                         scores[j] += score[j];
                     }
+                }
+                if (scores == null) {
+                    return;
                 }
                 
                 AppUtils.setAggScores(scores);
@@ -209,12 +216,12 @@ public class GameTableView extends Composite  {
             public void onSuccess(List<Episode> result) {
                 episodes = result;
                 episodeContainer.clear();
-                AppUtils.EVENT_BUS.fireEvent(new ScoreUpdatedEvent());
                 int widgetId = 0;
                 for (Episode episode : result) {
                     episodeContainer.add(new EpisodeView(episode, isReadOnly, widgetId));
                     widgetId ++;
                 }
+                AppUtils.EVENT_BUS.fireEvent(new ScoreUpdatedEvent());
                 AppUtils.EVENT_BUS.fireEvent(new NextEpisodeEvent(openEpisodeEventId));
             }
 

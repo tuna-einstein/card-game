@@ -12,13 +12,13 @@ import com.usp.kiss.shared.model.Episode;
 public class AppUtils {
 
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
-    
+
     private static String userEmail = "";
-    
+
     private static List<String> playerNames;
-    
+
     private static int[] aggScores;
-    
+
     public static int getScore(int expected, int actual) {
         if (expected < 0 || actual < 0) {
             return 0;
@@ -33,11 +33,11 @@ public class AppUtils {
             return Math.abs(expected - actual) * -11;
         }
     }
-    
+
     public static int[] computeScore(Episode episode) {
         int[] expected = episode.getExpected();
         int actual[] = episode.getActual();
-        
+
         int[] score = new int[actual.length];
         for (int i = 0; i < actual.length; i++) {
             score[i] = getScore(expected[i], actual[i]);
@@ -63,15 +63,15 @@ public class AppUtils {
             playerNames.set(i, capitalize(playerNames.get(i)));
         }
     }
-    
+
     public static String getDealer(int widgetId) {
         return playerNames.get(widgetId % playerNames.size());
     }
-    
+
     public static int getCardCount(String episodeTitle) {
         return Integer.parseInt(episodeTitle.substring(0, episodeTitle.length() - 1));
     }
-    
+
     public static Suits getSuit(String episodeTitle) {
         String v = episodeTitle.substring(episodeTitle.length() - 1);
         if (v.equals("H")) {
@@ -88,11 +88,11 @@ public class AppUtils {
         }
         return Suits.NEUTRAL;
     }
-    
+
 
     private static String capitalize(final String line) {
         return Character.toUpperCase(line.charAt(0)) + line.substring(1);
-     }
+    }
 
     public static int[] getAggScores() {
         return aggScores;
@@ -100,17 +100,20 @@ public class AppUtils {
 
     public static void setAggScores(int[] aggScores) {
         AppUtils.aggScores = aggScores;
-        AppUtils.EVENT_BUS.fireEvent(new AggScoreChangedEvent());
+        // AppUtils.EVENT_BUS.fireEvent(new AggScoreChangedEvent());
     }
-    
+
     public static int getMaxScore() {
-      int max = aggScores[0];
-      for (int v : aggScores) {
-          if (max < v) {
-              max = v;
-          }
-      }
-      return max;
+        if (aggScores == null) {
+            return -1;
+        }
+        int max = aggScores[0];
+        for (int v : aggScores) {
+            if (max < v) {
+                max = v;
+            }
+        }
+        return max;
     }
 }
 
