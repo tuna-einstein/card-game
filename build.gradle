@@ -1,0 +1,123 @@
+buildscript {
+    // Dependency Versions
+    ext{
+        gaeVer = '1.9.19'
+        gwtVer = '2.7.0'
+    }
+     
+    repositories {
+        maven {
+            url 'http://dl.bintray.com/steffenschaefer/maven'
+        }
+        maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+        mavenCentral()
+        jcenter()
+    }
+ 
+    dependencies {
+        classpath "com.google.appengine:gradle-appengine-plugin:$gaeVer"
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.7"
+    }
+}
+ 
+repositories{
+    mavenCentral()
+     maven {
+        url "http://maven.seasar.org/maven2/"
+    }
+}
+ 
+apply plugin: 'java'
+apply plugin: "net.ltgt.apt"
+apply plugin: 'war'
+apply plugin: 'appengine'
+apply plugin: 'gwt'
+
+def slim3Version = "1.0.16"
+
+dependencies {
+
+    compile("org.slim3:slim3:1.0.16") {
+        exclude group: "com.google.appengine", module: "appengine-api-1.0-sdk"
+        exclude group: "com.google.appengine", module: "appengine-api-labs"
+    }
+    
+    compile files('libs/org.moxieapps.gwt.highcharts-1.7.0.jar')
+    
+    
+    compile "com.google.gwt:gwt-user:$gwtVer"
+    compile "com.google.gwt:gwt-dev:$gwtVer"
+    compile "com.google.appengine:appengine-api-1.0-sdk:$gaeVer"
+    appengineSdk "com.google.appengine:appengine-java-sdk:$gaeVer"
+    
+    providedCompile "javax.servlet:servlet-api:2.5"
+    apt("org.slim3:slim3:1.0.16") {
+        exclude group: "org.apache.ant", module: "ant"
+    }
+ 
+    testCompile 'junit:junit:4.11'
+    testCompile "com.google.appengine:appengine-testing:$gaeVer"
+    testCompile "com.google.appengine:appengine-api-labs:$gaeVer"
+    testCompile "com.google.appengine:appengine-api-stubs:$gaeVer"
+}
+ 
+gwt{
+    //gwtVersion='2.7.0' // Including this seems to remove -user and -dev, along with several app engine dependencies from the gradle listing in Eclipse
+    modules 'com.usp.kiss.MAIN'
+    devModules 'com.usp.kiss.MAIN'
+}
+ 
+configurations {
+    providedCompile // <scope>provided</scope>
+    aptCompile5
+}
+
+sourceSets {
+    apt_generated
+    main.compileClasspath += configurations.providedCompile
+    test.compileClasspath += configurations.providedCompile
+    test.runtimeClasspath += configurations.providedCompile
+}
+
+appengine {
+    downloadSdk = true
+    jvmFlags = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000']
+    httpPort = 8888
+    appcfg{
+        oauth2 = true
+    }
+    
+    enhancer {
+        version = "v2"
+        api="jpa"
+        enhanceOnBuild = true
+    }
+}
+
+// ## slim3 task
+
+// APT for slim3
+// http://int128.hatenablog.com/entry/20120813/1344854664
+task compileAptJava(overwrite: true) << {
+    // 出力先が存在しないとant.aptがエラーになる
+    sourceSets.apt_generated.output.resourcesDir.mkdirs()
+    // ant.aptにfactorypathを直接渡せないのでID渡し
+    ant.path(id: 'aptFactoryPath', location: configurations.aptCompile5.asPath)
+    ant.apt(compile: false,
+            includeAntRuntime: false,
+            factorypathref: 'aptFactoryPath',
+            classpath: configurations.compile.asPath,
+            preprocessdir: sourceSets.apt_generated.output.resourcesDir,
+            encoding: 'UTF-8') {
+        sourceSets.main.java.srcDirs.each{
+            src(path: it)
+        }
+    }
+
+    sourceSets.main.java.srcDirs += sourceSets.apt_generated.output.resourcesDir
+}
+
+compileJava.dependsOn compileAptJava

@@ -32,6 +32,8 @@ gwt-unitCache/
 test-classes/
 www-test/
 
+.gradle/
+
 
 # Directories #
 /build/
@@ -103,3 +105,6 @@ local.properties
  
 # PDT-specific
 .buildpath
+
+!gradle-wrapper.jar
+!libs/*.jar
