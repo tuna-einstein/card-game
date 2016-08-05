@@ -1,14 +1,14 @@
 <project name="slim3-blank" default="gen-controller" basedir=".">
-    <property file="build.properties" />
+    <!--<property file="build.properties" />-->
 
     <path id="classpath">
-        <fileset dir="war/WEB-INF/classes">
-            <include name="**/*.class" />
-        </fileset>
-        <fileset dir="war/WEB-INF/lib">
-            <include name="**/*.jar" />
-        </fileset>
-        <fileset dir="lib">
+        <!--<fileset dir="src/main/webapp/WEB-INF/classes">-->
+            <!--<include name="**/*.class" />-->
+        <!--</fileset>-->
+        <!--<fileset dir="src/main/webapp/WEB-INF/libs">-->
+            <!--<include name="**/*.jar" />-->
+        <!--</fileset>-->
+        <fileset dir="libs">
             <include name="**/*.jar" />
         </fileset>
     </path>
