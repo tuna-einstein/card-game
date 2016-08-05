@@ -1,3 +1,4 @@
+.idea
 *.class
 
 # Package Files #
@@ -12,7 +13,6 @@ gwt-unitCache/
 .apt_generated/
 
 # more caches and things from deploy #
-war/
 
 #compilation logs
 .gwt/
@@ -31,7 +31,7 @@ test-classes/
 www-test/
 
 .gradle/
-
+war/
 
 # Directories #
 /build/
