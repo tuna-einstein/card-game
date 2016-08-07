@@ -8,6 +8,7 @@
 	<inherits name="org.slim3.gwt.emul.S3Emulation" />
 	<inherits name="com.google.gwt.user.theme.standard.Standard" />
 	<inherits name="org.moxieapps.gwt.highcharts.Highcharts" />
+	<inherits name="com.google.gwt.resources.Resources" />
 	<!-- <inherits name="com.google.gwt.user.theme.chrome.Chrome" /> -->
 	<!-- <inherits name="com.google.gwt.user.theme.dark.Dark" /> -->
 

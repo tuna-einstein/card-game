@@ -25,45 +25,52 @@ public class MainDashBoard extends Composite {
 
     @UiField  TabLayoutPanel  tabPanel;
     @UiField Image search;
-    @UiField Image box;
+    @UiField Image list;
     @UiField Image create;
     @UiField Label loginName;
     @UiField SingleUserView singleUserView;
-    
+
     private String userEmail;
     public MainDashBoard() {
         initWidget(uiBinder.createAndBindUi(this));
         checkLogin();
         tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
-            
+
             public void onSelection(SelectionEvent<Integer> event) {
                 switch(event.getSelectedItem()) {
-                case 0:
-                    search.setUrl("search.png");
-                    box.setUrl("box-icon-unselected.png");
-                    create.setUrl("create-unselected.png");
-                    break;
-                case 1:
-                    search.setUrl("search-unselected.png");
-                    box.setUrl("box-icon.png");
-                    create.setUrl("create-unselected.png");
-                    if (userEmail == null) {
-                        initLogin();
-                    } else {
-                        singleUserView.listGames(userEmail);
-                    }
-                    break;
-                case 2:
-                    search.setUrl("search-unselected.png");
-                    box.setUrl("box-icon-unselected.png");
-                    create.setUrl("create.png");
-                    break;
+                    case 0:
+                        list.setUrl("list_unselected.png");
+                        search.setUrl("search.png");
+                        create.setUrl("create.png");
+                        if (userEmail == null) {
+                            initLogin();
+                        } else {
+                            singleUserView.listGames(userEmail);
+                        }
+                        break;
+                    case 1:
+                        create.setUrl("create_unselected.png");
+                        search.setUrl("create.png");
+                        list.setUrl("list.png");
+                        break;
+
+                    case 2:
+                        search.setUrl("search_unselected.png");
+                        list.setUrl("list.png");
+                        create.setUrl("create.png");
+                        break;
                 }
-                
+
             }
         });
+        tabPanel.selectTab(0);
+        if (userEmail == null) {
+            initLogin();
+        } else {
+            singleUserView.listGames(userEmail);
+        }
     }
-    
+
     private void initLogin() {
         GetLoginEmailServiceAsync emailfetcher = GWT.create(GetLoginEmailService.class);
         emailfetcher.getEmail( new AsyncCallback<String>() {
@@ -84,7 +91,7 @@ public class MainDashBoard extends Composite {
             }
         });
     }
-    
+
     private void checkLogin() {
         GetLoginEmailServiceAsync emailfetcher = GWT.create(GetLoginEmailService.class);
         emailfetcher.getEmail( new AsyncCallback<String>() {
@@ -98,7 +105,7 @@ public class MainDashBoard extends Composite {
                     AppUtils.setUserEmail(result);
                     loginName.setText(result);
                 } else {
-                   // Do nothing.
+                    // Do nothing.
                 }
             }
         });

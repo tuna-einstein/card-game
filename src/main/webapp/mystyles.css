@@ -66,3 +66,12 @@ h1 {
 .FlexTable-EvenRow {
   background-color:  #dddddd;
 }
+
+.gwt-ToggleButton-up {
+   color:green;
+   width: 100px;
+}
+.gwt-ToggleButton-down {
+   color:red;
+   width: 100px;
+}
