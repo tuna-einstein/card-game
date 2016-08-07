@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,7 +46,7 @@ public class SingleUserView extends Composite {
         }
         container.clear();
 
-        container.add(new Label("Please wait...."));
+        container.add(BusyWidget.getLoading());
         ListGamesServiceAsync gamesService = GWT.create(ListGamesService.class);
         gamesService.list(userEmail, new AsyncCallback<List<Game>>() {
 

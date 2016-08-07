@@ -98,8 +98,10 @@ public class GameTableView extends Composite  {
 
         deleteButton.setVisible(!isReadOnly);
 
-        epsLabel.setValue("Eps");
+        epsLabel.setValue("Specifics");
         epsLabel.getElement().getStyle().setWidth(90, Unit.PCT);
+        epsLabel.setReadOnly(true);
+       // epsLabel.setVisible(false);
         playerNames = new EditableLabel[game.getNumPlayers()];
         List<String> names = AppUtils.getPlayerNames();
 

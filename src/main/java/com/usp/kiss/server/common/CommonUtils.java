@@ -34,6 +34,6 @@ public class CommonUtils {
 
     public static String getGoogleLoginUrl() {
         UserService userService = UserServiceFactory.getUserService();
-        return userService.createLoginURL("/login");
+        return userService.createLoginURL("/");
     }
 }

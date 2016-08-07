@@ -14,17 +14,20 @@ public class UpdatePlayerNameServiceImpl implements UpdatePlayerNameService {
 
     public Game update(Key gameKey, String playerName, int index) {
         Game game = Datastore.get(Game.class, gameKey);
-        game.getPlayers().set(index, playerName.toLowerCase());
+
+        String player = playerName.toLowerCase();
+
+        game.getPlayers().set(index, player);
         Datastore.put(game);
         
         // Update prefix store
         SearchPrefixMeta meta = SearchPrefixMeta.get();
         List<SearchPrefix> prefixes = Datastore.query(meta)
-                .filter(meta.prefix.equal(playerName))
+                .filter(meta.prefix.equal(player))
                 .asList();
         if (prefixes.isEmpty()) {
             SearchPrefix newPrefix = new SearchPrefix();
-            newPrefix.setPrefix(playerName.toLowerCase());
+            newPrefix.setPrefix(player);
             Datastore.put(newPrefix);
         }
         

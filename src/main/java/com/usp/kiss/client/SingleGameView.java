@@ -29,8 +29,8 @@ public class SingleGameView extends Composite {
     public SingleGameView(Game game) {
         initWidget(uiBinder.createAndBindUi(this));
         this.game = game;
-        gameHeader.setText(game.getOwnerEmail() + " : " + game.getDate());
-        gameSubHeader.setText(getSubText());
+        gameSubHeader.setText(game.getOwnerEmail() + " : " + game.getDate());
+        gameHeader.setText(getSubText());
     }
 
 

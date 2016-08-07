@@ -11,4 +11,11 @@ public class BusyWidget {
         image.setHeight("100%");
         return image;
     }
+    
+    public static Widget getLoading() {
+        Image image = new Image("loading.gif");
+        //image.setWidth("100%");
+        image.setHeight("100%");
+        return image;
+    }
 }

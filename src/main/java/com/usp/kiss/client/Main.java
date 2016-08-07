@@ -5,15 +5,17 @@ import javax.annotation.Nonnull;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.UmbrellaException;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.usp.kiss.client.service.GetLoginEmailService;
+import com.usp.kiss.client.service.GetLoginEmailServiceAsync;
 
 
 public class Main implements EntryPoint {
 
     Image im = new Image();
 
-    private String email;
-    private MainDashBoard mainView;
     public void onModuleLoad() {
 
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
@@ -23,9 +25,8 @@ public class Main implements EntryPoint {
             }
         });
 
-        mainView = new MainDashBoard();
-        DisplayStack.push(mainView);
-
+        DisplayStack.push(BusyWidget.getLoading());
+        checkLogin();
     }
 
     private static void ensureNotUmbrellaError(@Nonnull Throwable e) {
@@ -38,5 +39,45 @@ public class Main implements EntryPoint {
                 System.err.println(th);
             }
         }
+    }
+    
+    private void checkLogin() {
+        GetLoginEmailServiceAsync emailfetcher = GWT.create(GetLoginEmailService.class);
+        emailfetcher.getEmail( new AsyncCallback<String>() {
+
+            public void onFailure(Throwable caught) {
+                Window.Location.replace("/logoutURL");
+            }
+
+            public void onSuccess(String result) {
+                if (result.contains("@")) {
+                    AppUtils.setUserEmail(result);
+                   // DisplayStack.pop();
+                   DisplayStack.push(new MainDashBoard());
+                } else {
+                	initLogin();
+                }
+            }
+        });
+    }
+    
+    private void initLogin() {
+        GetLoginEmailServiceAsync emailfetcher = GWT.create(GetLoginEmailService.class);
+        emailfetcher.getEmail( new AsyncCallback<String>() {
+
+            public void onFailure(Throwable caught) {
+                Window.Location.replace("/logoutURL");
+            }
+
+            public void onSuccess(String result) {
+                if (result.contains("@")) {
+                    AppUtils.setUserEmail(result);
+                   // DisplayStack.pop();
+                  DisplayStack.push(new MainDashBoard());
+                } else {
+                    Window.open(result,  "_self", "");
+                }
+            }
+        });
     }
 }
